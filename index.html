@@ -655,6 +655,8 @@
       tab-size: 2
     }
 
+    figure.code pre code { background: none; padding: 0; border-radius: 0; font-size: inherit; color: inherit; word-break: normal }
+
     .tk-c {
       color: #9fb0c8;
       font-style: italic
@@ -6205,25 +6207,9 @@ df -h / ; free -m ; cat /opt/app/release.env
         var kw = (KW[l] || '').split(/\s+/).filter(Boolean).join('|');
         var cm = (l === 'js' || l === 'json') ? /\/\/[^\n]*/ : (l === 'sql' ? /--[^\n]*/ : /#[^\n]*/);
         if (l === 'ini') cm = /^[;#][^\n]*/;
-        var defs = [[cm.source, 'tk-c'], [/"(?:[^"\\n]|\.)*"/.source, 'tk-s'], [/'[^'\n]*'/.source, 'tk-s']];
-        if (kw) defs.push([new RegExp('\b(?:' + kw + ')\b').source, 'tk-k']);
+        var defs = [[cm.source, 'tk-c'], [/"(?:[^"\\\n]|\\.)*"/.source, 'tk-s'], [/'[^'\n]*'/.source, 'tk-s']];
+        if (kw) defs.push([new RegExp('\\b(?:' + kw + ')\\b').source, 'tk-k']);
         defs.push([/\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|<[A-Z0-9_]+>/.source, 'tk-v']);
-        var re = new RegExp('(' + defs.map(function (d) { return d[0] }).join(')|(') + ')', 'gm');
-        var out = '', last = 0, m, i;
-        while ((m = re.exec(src))) {
-          out += esc(src.slice(last, m.index));
-          var cls = 'tk-n'; for (i = 0; i < defs.length; i++) { if (m[i + 1] !== undefined) { cls = defs[i][1]; break } }
-          out += '<span class="' + cls + '">' + esc(m[0]) + '</span>'; last = m.index + m[0].length; if (m[0].length === 0) re.lastIndex++;
-        }
-        return out + esc(src.slice(last));
-      }
-      function highlight(src, l) {
-        var kw = (KW[l] || '').split(/\s+/).filter(Boolean).join('|');
-        var cm = (l === 'js' || l === 'json') ? '\/\/[^\n]*' : (l === 'sql' ? '--[^\n]*' : '#[^\n]*');
-        if (l === 'ini') cm = '^[;#][^\n]*';
-        var defs = [[cm, 'tk-c'], ['"(?:[^"\\\n]|\\.)*"', 'tk-s'], ["'[^'\n]*'", 'tk-s']];
-        if (kw) defs.push(['\b(?:' + kw + ')\b', 'tk-k']);
-        defs.push(['\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|<[A-Z0-9_]+>', 'tk-v']);
         var re = new RegExp('(' + defs.map(function (d) { return d[0] }).join(')|(') + ')', 'gm');
         var out = '', last = 0, m, i;
         while ((m = re.exec(src))) {
